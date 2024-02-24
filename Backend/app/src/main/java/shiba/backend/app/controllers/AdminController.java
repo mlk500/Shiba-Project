@@ -20,39 +20,44 @@ public class AdminController {
         this.adminBL = adminBL;
     }
 
-    @PostMapping("add")
-    public Admin addAdmin(@RequestBody Admin admin) {
-        return adminBL.addAdmin(admin);
+    @GetMapping("/demo")
+    public ResponseEntity<String> testToken(){
+        return ResponseEntity.ok("Hello authorized admin");
     }
 
-    @DeleteMapping("delete/{id}")
-    public void deleteAdmin(@PathVariable int id) {
-        adminBL.deleteAdmin(id);
-    }
-
-    @GetMapping("getAll")
-    public List<Admin> getAllAdmins() {
-        return adminBL.getAllAdmins();
-    }
-
-    @GetMapping("getAdmin")
-    public Admin getAdmin(@RequestBody int id) {
-        return adminBL.getAdmin(id);
-    }
-
-    @GetMapping("getAdminBySector")
-    public Admin getAdminBySector(@RequestParam String sector) {
-        return adminBL.getAdminBySector(sector);
-    }
-
-    @PutMapping("updateAdmin/{id}")
-    public Admin updateNote(@PathVariable Integer id, @RequestBody Admin admin) {
-        return adminBL.updateAdmin(id, admin);
-    }
-
-    public ResponseEntity<String> deleteAll() {
-        adminBL.deleteAll();
-        return new ResponseEntity<>("All admins deleted", HttpStatus.OK);
-    }
+//    @PostMapping("add")
+//    public Admin addAdmin(@RequestBody Admin admin) {
+//        return adminBL.addAdmin(admin);
+//    }
+//
+//    @DeleteMapping("delete/{id}")
+//    public void deleteAdmin(@PathVariable int id) {
+//        adminBL.deleteAdmin(id);
+//    }
+//
+//    @GetMapping("getAll")
+//    public List<Admin> getAllAdmins() {
+//        return adminBL.getAllAdmins();
+//    }
+//
+//    @GetMapping("getAdmin")
+//    public Admin getAdmin(@RequestBody int id) {
+//        return adminBL.getAdmin(id);
+//    }
+//
+//    @GetMapping("getAdminBySector")
+//    public Admin getAdminBySector(@RequestParam String sector) {
+//        return adminBL.getAdminBySector(sector);
+//    }
+//
+//    @PutMapping("updateAdmin/{id}")
+//    public Admin updateNote(@PathVariable Integer id, @RequestBody Admin admin) {
+//        return adminBL.updateAdmin(id, admin);
+//    }
+//
+//    public ResponseEntity<String> deleteAll() {
+//        adminBL.deleteAll();
+//        return new ResponseEntity<>("All admins deleted", HttpStatus.OK);
+//    }
 
 }

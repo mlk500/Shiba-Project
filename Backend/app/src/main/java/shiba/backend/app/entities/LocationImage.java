@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "Location Image")
+@Table(name = "location_image")
 @Data
 public class LocationImage {
     @Id
