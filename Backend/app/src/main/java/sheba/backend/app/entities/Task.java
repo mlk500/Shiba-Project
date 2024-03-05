@@ -17,8 +17,8 @@ public abstract class Task {
     private String description;
 
     //many to many with object
-    @ManyToMany(mappedBy = "taskList")
-    private List<Object> objectList;
+//    @ManyToMany(mappedBy = "taskList")
+//    private List<LocationObject> objectList;
 
 
 }

@@ -41,19 +41,19 @@ public class DataLoader {
             kitchen.setName("Kitchen");
             kitchen.setDescription("a kitchen that is located next to PT room");
             kitchen.setFloor(2);
-            locationBL.craeteLocation(kitchen);
+            locationBL.createLocation(kitchen);
 
             Location ptRoom = new Location();
             ptRoom.setName("PT");
             ptRoom.setDescription("PT room with training machines");
             ptRoom.setFloor(2);
-            locationBL.craeteLocation(ptRoom);
+            locationBL.createLocation(ptRoom);
 
             Location playroom = new Location();
             playroom.setName("Playroom");
             playroom.setDescription("A room with board games");
             playroom.setFloor(3);
-            locationBL.craeteLocation(playroom);
+            locationBL.createLocation(playroom);
         };
     }
 }

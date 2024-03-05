@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 @Table(name = "Object")
 @Data
-public class Object {
+public class LocationObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long objectID;
@@ -24,14 +24,14 @@ public class Object {
     // one to many with object image
     @OneToMany(mappedBy = "object", cascade = CascadeType.ALL, orphanRemoval = true)
     //if an object is deleted the images are deleted as well
-    private List<ObjectImage> objectImages;
+    private List<ObjectImages> objectImages;
 
-    // many to many with task
-    @ManyToMany
-    @JoinTable(name = "object_task",
-            joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "task_id"))
-    private List<Task> taskList;
+//    // many to many with task
+//    @ManyToMany
+//    @JoinTable(name = "object_task",
+//            joinColumns = @JoinColumn(name = "game_id"),
+//            inverseJoinColumns = @JoinColumn(name = "task_id"))
+//    private List<Task> taskList;
 
 
 }

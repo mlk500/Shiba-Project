@@ -6,7 +6,7 @@ import lombok.Data;
 @Entity
 @Table(name = "object_image")
 @Data
-public class ObjectImage {
+public class ObjectImages {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long objectImageID;
@@ -14,6 +14,6 @@ public class ObjectImage {
     //many to one with
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_object_id")
-    private Object object;
+    private LocationObject object;
 
 }

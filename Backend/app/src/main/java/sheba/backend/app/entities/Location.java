@@ -1,9 +1,11 @@
 package sheba.backend.app.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
 
@@ -11,6 +13,9 @@ import java.util.List;
 @Table(name = "Location")
 @Data
 @DynamicInsert
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,11 +23,13 @@ public class Location {
     private String name;
     private String description;
     private int floor;
-    private String locationImg;
     private String QRCode;
 
+    @OneToOne(mappedBy = "location", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private LocationImage locationImage;
 
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     //if a location is deleted the objects of the location are deleted as well
-    private List<Object> objectsList;
+    private List<LocationObject> objectsList;
+
 }

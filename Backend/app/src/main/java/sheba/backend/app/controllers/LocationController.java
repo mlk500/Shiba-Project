@@ -4,8 +4,10 @@ import com.google.zxing.WriterException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import sheba.backend.app.BL.LocationBL;
 import sheba.backend.app.entities.Location;
 import sheba.backend.app.util.Endpoints;
@@ -18,9 +20,13 @@ import java.io.IOException;
 public class LocationController {
     private final LocationBL locationBL;
 
-    @PostMapping("create")
-    public ResponseEntity<?> addLocation(@RequestBody Location location) throws IOException, WriterException {
-        return ResponseEntity.ok(locationBL.craeteLocation(location));
+
+    @PostMapping(value = "create", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<?> addLocation(@RequestPart("location") Location location,
+                                         @RequestPart(value = "image", required = false) MultipartFile image) throws IOException, WriterException {
+        if (image == null || image.isEmpty())
+            return ResponseEntity.ok(locationBL.createLocation(location));
+        return ResponseEntity.ok(locationBL.createLocationWithImage(location, image));
     }
 
     @GetMapping("getAll")
@@ -54,6 +60,5 @@ public class LocationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
         }
     }
-
 
 }

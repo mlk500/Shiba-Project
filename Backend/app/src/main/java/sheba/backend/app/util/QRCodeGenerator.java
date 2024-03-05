@@ -27,8 +27,6 @@ public class QRCodeGenerator {
             MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
         }
 
-
-
         return qrCodeName; // Return the file path where the QR code is saved
     }
 }
