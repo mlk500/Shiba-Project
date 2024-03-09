@@ -10,8 +10,6 @@ public class AdminDTO {
     private UserRole role;
     // Exclude gamesList or any sensitive information
 
-    // Getters and setters
-
     public long getAdminID() {
         return adminID;
     }

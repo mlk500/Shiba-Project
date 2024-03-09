@@ -1,5 +1,6 @@
 package sheba.backend.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +31,7 @@ public class Admin{
 
     
     //if an admin is deleted the games are not deleted
+    @JsonIgnore
     @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, orphanRemoval = false)
 
     private List<Game> gamesList;

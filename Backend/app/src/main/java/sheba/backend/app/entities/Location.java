@@ -30,6 +30,6 @@ public class Location {
 
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     //if a location is deleted the objects of the location are deleted as well
-    private List<LocationObject> objectsList;
+    private List<ObjectLocation> objectsList;
 
 }

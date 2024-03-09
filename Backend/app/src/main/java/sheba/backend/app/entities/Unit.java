@@ -23,6 +23,6 @@ public class Unit {
 
     @ManyToOne
     @JoinColumn(name = "object_id")
-    private LocationObject object;
+    private ObjectLocation object;
 
 }

@@ -8,13 +8,13 @@ import java.util.List;
 @Entity
 @Table(name = "Object")
 @Data
-public class LocationObject {
+public class ObjectLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long objectID;
     private String name;
     private String description;
-    private String objectImg;
+//    private String objectImg;
 
     //many to one with location
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,7 +24,7 @@ public class LocationObject {
     // one to many with object image
     @OneToMany(mappedBy = "object", cascade = CascadeType.ALL, orphanRemoval = true)
     //if an object is deleted the images are deleted as well
-    private List<ObjectImages> objectImages;
+    private List<ObjectImage> objectImages;
 
 //    // many to many with task
 //    @ManyToMany

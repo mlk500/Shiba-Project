@@ -13,5 +13,5 @@ public class QuestionTask extends Task {
 
     private String question;
     private List<String> answers;
-    private int correctAnswer;
+    private Integer correctAnswer;
 }

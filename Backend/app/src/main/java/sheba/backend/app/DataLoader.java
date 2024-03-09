@@ -4,7 +4,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import sheba.backend.app.BL.AdminBL;
 import sheba.backend.app.BL.LocationBL;
 import sheba.backend.app.entities.Admin;
 import sheba.backend.app.entities.Location;
@@ -36,6 +35,20 @@ public class DataLoader {
             admin.setSector("Health");
             admin.setRole(UserRole.MainAdmin);
             adminRepository.save(admin);
+
+            Admin admin1 = new Admin();
+            admin1.setUsername("secadmin1");
+            admin1.setPassword(passwordEncoder.encode("admin1"));
+            admin1.setSector("Health");
+            admin1.setRole(UserRole.SectorAdmin);
+            adminRepository.save(admin1);
+
+            Admin admin2 = new Admin();
+            admin2.setUsername("secadmin2");
+            admin2.setPassword(passwordEncoder.encode("admin2"));
+            admin2.setSector("PT");
+            admin2.setRole(UserRole.SectorAdmin);
+            adminRepository.save(admin2);
 
             Location kitchen = new Location();
             kitchen.setName("Kitchen");
