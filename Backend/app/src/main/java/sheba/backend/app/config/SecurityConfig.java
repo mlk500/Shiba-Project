@@ -18,13 +18,25 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import sheba.backend.app.security.CustomAdminDetailsService;
 import sheba.backend.app.security.JwtAuthenticationFilter;
+import sheba.backend.app.util.Endpoints;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig implements WebMvcConfigurer {
     private final CustomAdminDetailsService adminDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    private String[] authorized_urls = {"/login/**", "/register/**"};
+    private String[] authorized_urls_test = {"/login/**", "/register/**",
+            Endpoints.LOCATION_IMAGE_ENDPOINT + "/**", Endpoints.LOCATION_ENDPOINT+ "/**",
+            Endpoints.LOCATION_IMAGE_ENDPOINT + "/getimage/**",
+            Endpoints.OBJECTS_ENDPOINT+"/**",
+            Endpoints.OBJECT_IMAGE_ENDPOINT+"/**",
+            Endpoints.QUESTION_TASK_ENDPOINT+"/**",
+    Endpoints.TASK_ENDPOINT+"/**"};
 
     public SecurityConfig(CustomAdminDetailsService adminDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.adminDetailsService = adminDetailsService;
@@ -36,7 +48,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         return http
                 .csrf(AbstractHttpConfigurer :: disable)
                 .authorizeHttpRequests(
-                        req->req.requestMatchers("/login/**", "/register/**")
+                        req->req.requestMatchers(authorized_urls_test)
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
@@ -56,6 +68,8 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .build();
     }
 
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -69,8 +83,8 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Apply to all endpoints
-                .allowedOrigins("http://localhost:3000") // Allow this origin to access the endpoints
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Specify allowed methods
+                .allowedOrigins("http://localhost:3000", "http://localhost:8080/") // Allow this origin to access the endpoints
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*") // Allow all headers
                 .allowCredentials(true);
     }

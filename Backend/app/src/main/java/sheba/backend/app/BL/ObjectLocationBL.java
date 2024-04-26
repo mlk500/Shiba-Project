@@ -11,6 +11,8 @@ import sheba.backend.app.repositories.ObjectImageRepository;
 import sheba.backend.app.util.Endpoints;
 
 import jakarta.persistence.EntityNotFoundException;
+import sheba.backend.app.util.StoragePath;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,7 +41,7 @@ public class ObjectLocationBL {
         ObjectLocation savedObject = locationObjectRepository.save(locationObject);
 
         if (images != null && !images.isEmpty()) {
-            Path objectDirectory = Paths.get(Endpoints.OBJECTS_IMAGES_PATH + File.separator + savedObject.getObjectID());
+            Path objectDirectory = Paths.get(StoragePath.OBJECTS_IMAGES_PATH + File.separator + savedObject.getObjectID());
             Files.createDirectories(objectDirectory);
 
             List<ObjectImage> objectImages = new ArrayList<>();

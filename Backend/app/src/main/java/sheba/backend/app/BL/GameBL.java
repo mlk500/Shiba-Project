@@ -1,15 +1,26 @@
 package sheba.backend.app.BL;
 
+import com.google.zxing.WriterException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import sheba.backend.app.entities.Admin;
 import sheba.backend.app.entities.Game;
+import sheba.backend.app.entities.GameImage;
 import sheba.backend.app.repositories.AdminRepository;
+import sheba.backend.app.repositories.GameImageRepository;
 import sheba.backend.app.repositories.GameRepository;
 import sheba.backend.app.security.CustomAdminDetails;
+import sheba.backend.app.util.Endpoints;
+import sheba.backend.app.util.QRCodeGenerator;
+import sheba.backend.app.util.StoragePath;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,23 +28,48 @@ import java.util.Optional;
 public class GameBL {
     private final GameRepository gameRepository;
     private final AdminRepository adminRepository;
-    public GameBL(GameRepository gameRepository, AdminRepository adminRepository) {
+    private final GameImageRepository gameImageRepository;
+
+    public GameBL(GameRepository gameRepository, AdminRepository adminRepository, GameImageRepository gameImageRepository) {
         this.gameRepository = gameRepository;
         this.adminRepository = adminRepository;
+        this.gameImageRepository = gameImageRepository;
     }
 
-    public Game createGame(Game game) {
+    public Game createGame(Game game, MultipartFile image) throws IOException, WriterException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomAdminDetails adminDetails = (CustomAdminDetails) authentication.getPrincipal();
-        System.out.println("admin in BL  " + adminDetails);
         Admin admin = adminRepository.findAdminByUsername(adminDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
-        System.out.println("found him + " + admin);
         game.setAdmin(admin);
         game.setAdminID(admin.getAdminID());
-        return gameRepository.save(game);
+        Game savedGame = gameRepository.save(game);
+        if (image != null && !image.isEmpty()) {
+            savedGame = saveGameImage(savedGame, image);
+        }
+        String gameIdentifier = String.valueOf(savedGame.getGameID()); //change to URL later
+        String qrCodePath = QRCodeGenerator.generateQRCode("game-" + savedGame.getGameID(), gameIdentifier, StoragePath.GAME_QR);
+        savedGame.setQRCodePath(qrCodePath);
+        return gameRepository.save(savedGame);
     }
+    private Game saveGameImage(Game game, MultipartFile image) throws IOException {
+        Path gameImagePath = Paths.get(StoragePath.GAME_IMGS_PATH + game.getGameID());
+        Files.createDirectories(gameImagePath);
 
+        String imageFileName = image.getOriginalFilename();
+        Path imagePath = gameImagePath.resolve(imageFileName);
+        image.transferTo(imagePath);
+
+        GameImage gameImage = new GameImage();
+        gameImage.setName(imageFileName);
+        gameImage.setType(image.getContentType());
+        gameImage.setImagePath(imagePath.toString());
+        gameImage.setGame(game);
+
+        gameImageRepository.save(gameImage);
+        game.setGameImage(gameImage);
+        return game;
+    }
     public List<Game> getAllGames() {
         return gameRepository.findAll();
     }

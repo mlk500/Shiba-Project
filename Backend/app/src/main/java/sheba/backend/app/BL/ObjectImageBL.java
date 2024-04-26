@@ -8,6 +8,7 @@ import sheba.backend.app.entities.ObjectImage;
 import sheba.backend.app.repositories.ObjectLocationRepository;
 import sheba.backend.app.repositories.ObjectImageRepository;
 import sheba.backend.app.util.Endpoints;
+import sheba.backend.app.util.StoragePath;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class ObjectImageBL {
         ObjectLocation object = locationObjectRepository.findById(objectId)
                 .orElseThrow(() -> new EntityNotFoundException("LocationObject not found with ID: " + objectId));
 
-        Path objectDirectory = Paths.get(Endpoints.OBJECTS_IMAGES_PATH + File.separator + object.getObjectID());
+        Path objectDirectory = Paths.get(StoragePath.OBJECTS_IMAGES_PATH + File.separator + object.getObjectID());
         Files.createDirectories(objectDirectory);
 
         List<ObjectImage> savedImages = new ArrayList<>();

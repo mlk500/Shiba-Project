@@ -16,6 +16,7 @@ public class Game {
     private long adminID;
     private String gameName;
     private String description;
+    private String QRCodePath;
 
 
 

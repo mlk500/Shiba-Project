@@ -7,6 +7,7 @@ import sheba.backend.app.entities.LocationImage;
 import sheba.backend.app.exceptions.LocationMissingInLocationImage;
 import sheba.backend.app.repositories.LocationImageRepository;
 import sheba.backend.app.util.Endpoints;
+import sheba.backend.app.util.StoragePath;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class LocationImageBL {
     }
 
     public LocationImage uploadImageToFileSystem(MultipartFile file, Long locationID) throws IOException, LocationMissingInLocationImage {
-        String filePath = Endpoints.LOCATION_IMAGE_PATH + file.getOriginalFilename();
+        String filePath = StoragePath.LOCATION_IMAGE_PATH + file.getOriginalFilename();
         LocationImage locationImage = new LocationImage();
         locationImage.setName(file.getOriginalFilename());
         locationImage.setType(file.getContentType());

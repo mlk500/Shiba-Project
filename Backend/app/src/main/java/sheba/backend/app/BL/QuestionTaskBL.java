@@ -1,8 +1,8 @@
 package sheba.backend.app.BL;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sheba.backend.app.entities.QuestionTask;
+import sheba.backend.app.entities.Task;
 import sheba.backend.app.repositories.QuestionTaskRepository;
 
 import java.util.List;
@@ -23,33 +23,30 @@ public class QuestionTaskBL {
         return questionTaskRepository.save(questionTask);
     }
 
-    public Optional<QuestionTask> getQuestionTask(Long id) {
-        return questionTaskRepository.findById(id);
-    }
+    public QuestionTask updateQuestionTask(Long taskId, Long questionTaskId, QuestionTask questionTaskDetails) {
+        QuestionTask questionTask = questionTaskRepository.findByQuestionTaskIdAndTaskId(questionTaskId, taskId)
+                .orElseThrow(() -> new RuntimeException("No QuestionTask found with id " + questionTaskId + " for Task " + taskId));
 
-    public List<QuestionTask> getAllQuestionTasks() {
-        return questionTaskRepository.findAll();
-    }
-
-    public QuestionTask updateQuestionTask(Long id, QuestionTask questionTaskDetails) {
         if (questionTaskDetails.getCorrectAnswer() == null) {
             throw new IllegalArgumentException("Correct answer must not be null");
         }
 
-        QuestionTask questionTask = questionTaskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("QuestionTask not found with id " + id));
-        questionTask.setName(questionTaskDetails.getName());
-        questionTask.setDescription(questionTaskDetails.getDescription());
         questionTask.setQuestion(questionTaskDetails.getQuestion());
         questionTask.setAnswers(questionTaskDetails.getAnswers());
         questionTask.setCorrectAnswer(questionTaskDetails.getCorrectAnswer());
 
         return questionTaskRepository.save(questionTask);
     }
+//    public Optional<QuestionTask> getQuestionTask(Long id) {
+//        return questionTaskRepository.findById(id);
+//    }
 
-    public void deleteQuestionTask(Long id) {
-        questionTaskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("QuestionTask not found with id " + id));
-        questionTaskRepository.deleteById(id);
+//    public List<QuestionTask> getAllQuestionTasks() {
+//        return questionTaskRepository.findAll();
+//    }
+
+
+    public void deleteQuestionTask(QuestionTask questionTask) {
+        questionTaskRepository.deleteById(questionTask.getQuestionTaskID());
     }
 }

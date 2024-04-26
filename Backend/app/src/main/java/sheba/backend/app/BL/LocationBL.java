@@ -11,6 +11,7 @@ import sheba.backend.app.repositories.LocationImageRepository;
 import sheba.backend.app.repositories.LocationRepository;
 import sheba.backend.app.util.Endpoints;
 import sheba.backend.app.util.QRCodeGenerator;
+import sheba.backend.app.util.StoragePath;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class LocationBL {
     }
 
     private LocationImage uploadImageToFileSystem(MultipartFile file, Location location) throws IOException {
-        String filePath = Endpoints.LOCATION_IMAGE_PATH + file.getOriginalFilename();
+        String filePath = StoragePath.LOCATION_IMAGE_PATH + file.getOriginalFilename();
         LocationImage locationImage = new LocationImage();
         locationImage.setName(file.getOriginalFilename());
         locationImage.setType(file.getContentType());
