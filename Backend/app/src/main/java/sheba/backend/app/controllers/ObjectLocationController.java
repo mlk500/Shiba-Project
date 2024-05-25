@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sheba.backend.app.BL.LocationBL;
 import sheba.backend.app.BL.ObjectLocationBL;
 import sheba.backend.app.entities.ObjectLocation;
 import sheba.backend.app.util.Endpoints;
@@ -19,6 +20,7 @@ import java.util.List;
 public class ObjectLocationController {
 
     private final ObjectLocationBL locationObjectBL;
+    private final LocationBL locationBL;
 
     @PostMapping(value = "/create/{locationId}", consumes = { "multipart/form-data" })
     public ResponseEntity<?> addLocationObject(
@@ -34,6 +36,16 @@ public class ObjectLocationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving object images: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/getAll/{locationId}")
+    public ResponseEntity<?> getAllObjects (@PathVariable Long locationId){
+        try{
+            return ResponseEntity.ok(locationBL.getObjectsOfLocation(locationId));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }

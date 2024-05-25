@@ -28,6 +28,9 @@ public class TaskController {
     public ResponseEntity<?> createTask(@RequestPart("task") Task task,
                                         @RequestPart(value = "question", required = false) QuestionTask questionTask,
                                         @RequestPart(value = "media", required = false) List<MultipartFile> media) {
+        System.out.println("task is " + task);
+        System.out.println("question is " + questionTask);
+        System.out.println("media is " + "  " + media);
         try {
             taskBL.createTask(task, questionTask, media);
             return ResponseEntity.ok((HttpStatus.CREATED));

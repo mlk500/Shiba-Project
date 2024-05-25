@@ -1,5 +1,6 @@
 package sheba.backend.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,6 +18,7 @@ public class ObjectLocation {
 //    private String objectImg;
 
     //many to one with location
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_location_id")
     private Location location;

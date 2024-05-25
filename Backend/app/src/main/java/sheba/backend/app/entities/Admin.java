@@ -36,5 +36,9 @@ public class Admin{
 
     private List<Game> gamesList;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<Task> tasksList;
+
 
 }

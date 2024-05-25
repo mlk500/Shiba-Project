@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sheba.backend.app.entities.Location;
 import sheba.backend.app.entities.LocationImage;
+import sheba.backend.app.entities.ObjectLocation;
 import sheba.backend.app.repositories.LocationImageRepository;
 import sheba.backend.app.repositories.LocationRepository;
 import sheba.backend.app.util.Endpoints;
@@ -105,5 +106,10 @@ public class LocationBL {
 
     public Optional<Location> getLocationByID(long id) {
         return locationRepository.findById(id);
+    }
+
+    public List<ObjectLocation> getObjectsOfLocation(long id){
+        Optional<Location> currLocation = getLocationByID(id);
+        return currLocation.orElseThrow(() -> new RuntimeException("Location not found")).getObjectsList();
     }
 }
