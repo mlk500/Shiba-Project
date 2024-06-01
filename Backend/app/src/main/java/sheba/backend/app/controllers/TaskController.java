@@ -49,6 +49,21 @@ public class TaskController {
             Task updatedTask = taskBL.updateTask(taskId, task, questionTask, media);
             return ResponseEntity.ok(updatedTask);
         } catch (TaskCannotBeEmpty | IOException | IllegalArgumentException e) {
+            System.out.println("the error is " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving task: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/update-with-existing-media/{taskId}")
+    public ResponseEntity<?> updateTaskWithExistingMedia(@PathVariable Long taskId,
+                                        @RequestPart(value = "task", required = false) Task task,
+                                        @RequestPart(value = "question", required = false) QuestionTask questionTask,
+                                        @RequestPart(value = "media", required = false) List<MultipartFile> media) {
+        try {
+            Task updatedTask = taskBL.updateTask(taskId, task, questionTask, media);
+            return ResponseEntity.ok(updatedTask);
+        } catch (TaskCannotBeEmpty | IOException | IllegalArgumentException e) {
+            System.out.println("the error is " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving task: " + e.getMessage());
         }
     }
