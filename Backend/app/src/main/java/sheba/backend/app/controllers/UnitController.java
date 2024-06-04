@@ -17,12 +17,12 @@ import java.util.List;
 public class UnitController {
     private final UnitBL unitBL;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createUnit(@RequestBody Unit unit, @RequestParam long gameId, @RequestParam long taskId, @RequestParam long objectId) {
-        System.out.println("request  " + unit + " "  + gameId + " " + taskId + "  " + objectId);
-        unitBL.createUnit(unit, gameId, taskId, objectId);
-        return ResponseEntity.ok(HttpStatus.CREATED);
-    }
+//    @PostMapping("/create")
+//    public ResponseEntity<?> createUnit(@RequestBody Unit unit, @RequestParam long gameId, @RequestParam long taskId, @RequestParam long objectId) {
+//        System.out.println("request  " + unit + " "  + gameId + " " + taskId + "  " + objectId);
+//        unitBL.createUnit(unit, gameId, taskId, objectId);
+//        return ResponseEntity.ok(HttpStatus.CREATED);
+//    }
 
 //    @GetMapping("/getAll")
 //    public List<Unit> getAllUnits() {

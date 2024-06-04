@@ -2,10 +2,7 @@ package sheba.backend.app.BL;
 
 import org.springframework.stereotype.Service;
 import sheba.backend.app.entities.Unit;
-import sheba.backend.app.repositories.GameRepository;
-import sheba.backend.app.repositories.ObjectLocationRepository;
-import sheba.backend.app.repositories.TaskRepository;
-import sheba.backend.app.repositories.UnitRepository;
+import sheba.backend.app.repositories.*;
 
 import java.util.List;
 
@@ -17,12 +14,14 @@ public class UnitBL {
 
     private final TaskRepository taskRepository;
 
+    private final LocationRepository locationRepository;
     private final ObjectLocationRepository objectLocationRepository;
 
-    public UnitBL(UnitRepository unitRepository, GameRepository gameRepository, TaskRepository taskRepository, ObjectLocationRepository objectLocationRepository) {
+    public UnitBL(UnitRepository unitRepository, GameRepository gameRepository, TaskRepository taskRepository, LocationRepository locationRepository, ObjectLocationRepository objectLocationRepository) {
         this.unitRepository = unitRepository;
         this.gameRepository = gameRepository;
         this.taskRepository = taskRepository;
+        this.locationRepository = locationRepository;
         this.objectLocationRepository = objectLocationRepository;
     }
 
@@ -34,15 +33,25 @@ public class UnitBL {
         return unitRepository.findById(id).orElse(null);
     }
 
-    public Unit createUnit(Unit unit, long gameId, long taskId, long objectId) {
+    public Unit createUnit(Unit unit, long gameId) {
         unit.setGame(gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found")));
-        unit.setTask(taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found")));
-        unit.setObject(objectLocationRepository.findById(objectId).orElseThrow(() -> new RuntimeException("Object not found")));
-        unit.setTaskID(taskRepository.findById(taskId).get().getTaskID());
-        unit.setObjectID(objectLocationRepository.findById(objectId).get().getObjectID());
-        unit.setLocationID(objectLocationRepository.findById(objectId).get().getLocation().getLocationID());
+        unit.setTask(taskRepository.findById(unit.getTaskID()).orElseThrow(() -> new RuntimeException("Task not found")));
+        unit.setLocation(locationRepository.findById(unit.getLocationID()).orElseThrow(() -> new RuntimeException("Location not found")));
+        unit.setObject(objectLocationRepository.findById(unit.getObjectID()).orElseThrow(() -> new RuntimeException("Object not found")));
+//        unit.setTaskID(taskRepository.findById(unit.getTaskID()).get().getTaskID());
+//        unit.setObjectID(objectLocationRepository.findById(objectId).get().getObjectID());
+//        unit.setLocationID(objectLocationRepository.findById(objectId).get().getLocation().getLocationID());
         return unitRepository.save(unit);
     }
+//    public Unit createUnit(Unit unit, long gameId, long taskId, long objectId) {
+//        unit.setGame(gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found")));
+//        unit.setTask(taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found")));
+//        unit.setObject(objectLocationRepository.findById(objectId).orElseThrow(() -> new RuntimeException("Object not found")));
+//        unit.setTaskID(taskRepository.findById(taskId).get().getTaskID());
+//        unit.setObjectID(objectLocationRepository.findById(objectId).get().getObjectID());
+//        unit.setLocationID(objectLocationRepository.findById(objectId).get().getLocation().getLocationID());
+//        return unitRepository.save(unit);
+//    }
 
     public Unit updateUnit(long id, Unit updatedUnit) {
         return unitRepository.findById(id).map(unit -> {

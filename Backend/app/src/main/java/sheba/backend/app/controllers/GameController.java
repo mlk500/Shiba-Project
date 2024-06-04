@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sheba.backend.app.BL.GameBL;
 import sheba.backend.app.entities.Game;
+import sheba.backend.app.entities.Unit;
 import sheba.backend.app.util.Endpoints;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -23,12 +25,14 @@ public class GameController {
 
     @PostMapping(value = "create", consumes = {"multipart/form-data" })
     public ResponseEntity<?> createGame(@RequestPart("game") Game game,
-                                        @RequestPart(value = "image", required = false) MultipartFile image) {
+                                        @RequestPart(value = "image", required = false) MultipartFile image,
+                                        @RequestPart(value = "units", required = false) List<Unit> units) {
         try{
-            Game createdGame  = gameBL.createGame(game, image);
+            Game createdGame  = gameBL.createGame(game, image, units);
             return ResponseEntity.ok(HttpStatus.CREATED);
         }catch (RuntimeException e){
-            return ResponseEntity.internalServerError().build();
+            System.out.println(("error is " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving game: " + e.getMessage());
         }
         catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving object images: " + e.getMessage());

@@ -30,13 +30,14 @@ public class SecurityConfig implements WebMvcConfigurer {
     private final CustomAdminDetailsService adminDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private String[] authorized_urls = {"/login/**", "/register/**"};
-    private String[] authorized_urls_test = {"/login/**", "/register/**",
-            Endpoints.LOCATION_IMAGE_ENDPOINT + "/**", Endpoints.LOCATION_ENDPOINT+ "/**",
-            Endpoints.LOCATION_IMAGE_ENDPOINT + "/getimage/**",
-            Endpoints.OBJECTS_ENDPOINT+"/**",
-            Endpoints.OBJECT_IMAGE_ENDPOINT+"/**",
-            Endpoints.QUESTION_TASK_ENDPOINT+"/**",
-    Endpoints.TASK_ENDPOINT+"/**"};
+//    private String[] authorized_urls_test = {"/login/**", "/register/**",
+//            Endpoints.LOCATION_IMAGE_ENDPOINT + "/**", Endpoints.LOCATION_ENDPOINT+ "/**",
+//            Endpoints.LOCATION_IMAGE_ENDPOINT + "/getimage/**",
+//            Endpoints.OBJECTS_ENDPOINT+"/**",
+//            Endpoints.OBJECT_IMAGE_ENDPOINT+"/**",
+//            Endpoints.QUESTION_TASK_ENDPOINT+"/**",
+//            Endpoints.TASK_ENDPOINT+"/**",
+//            Endpoints.GAME_ENDPOINT+"/**"};
 
     public SecurityConfig(CustomAdminDetailsService adminDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.adminDetailsService = adminDetailsService;
@@ -48,7 +49,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         return http
                 .csrf(AbstractHttpConfigurer :: disable)
                 .authorizeHttpRequests(
-                        req->req.requestMatchers(authorized_urls_test)
+                        req->req.requestMatchers(authorized_urls)
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()

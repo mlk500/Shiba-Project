@@ -38,4 +38,9 @@ public class Unit {
     @JoinColumn(name = "object_id")
     private ObjectLocation object;
 
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
+
 }

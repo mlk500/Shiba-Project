@@ -9,11 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 import sheba.backend.app.entities.Admin;
 import sheba.backend.app.entities.Game;
 import sheba.backend.app.entities.GameImage;
+import sheba.backend.app.entities.Unit;
 import sheba.backend.app.repositories.AdminRepository;
 import sheba.backend.app.repositories.GameImageRepository;
 import sheba.backend.app.repositories.GameRepository;
 import sheba.backend.app.security.CustomAdminDetails;
-import sheba.backend.app.util.Endpoints;
 import sheba.backend.app.util.QRCodeGenerator;
 import sheba.backend.app.util.StoragePath;
 
@@ -29,24 +29,33 @@ public class GameBL {
     private final GameRepository gameRepository;
     private final AdminRepository adminRepository;
     private final GameImageRepository gameImageRepository;
+    private final UnitBL unitBL;
 
-    public GameBL(GameRepository gameRepository, AdminRepository adminRepository, GameImageRepository gameImageRepository) {
+    public GameBL(GameRepository gameRepository, AdminRepository adminRepository, GameImageRepository gameImageRepository, UnitBL unitBL) {
         this.gameRepository = gameRepository;
         this.adminRepository = adminRepository;
         this.gameImageRepository = gameImageRepository;
+        this.unitBL = unitBL;
     }
 
-    public Game createGame(Game game, MultipartFile image) throws IOException, WriterException {
+    public Game createGame(Game game, MultipartFile image, List<Unit> units) throws IOException, WriterException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomAdminDetails adminDetails = (CustomAdminDetails) authentication.getPrincipal();
         Admin admin = adminRepository.findAdminByUsername(adminDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
         game.setAdmin(admin);
         game.setAdminID(admin.getAdminID());
+
         Game savedGame = gameRepository.save(game);
+        if(!units.isEmpty()){
+            Game finalSavedGame = savedGame;
+            units.forEach(unit -> unitBL.createUnit(unit, finalSavedGame.getGameID()));
+        }
         if (image != null && !image.isEmpty()) {
             savedGame = saveGameImage(savedGame, image);
         }
+
+
         String gameIdentifier = String.valueOf(savedGame.getGameID()); //change to URL later
         String qrCodePath = QRCodeGenerator.generateQRCode("game-" + savedGame.getGameID(), gameIdentifier, StoragePath.GAME_QR);
         savedGame.setQRCodePath(qrCodePath);

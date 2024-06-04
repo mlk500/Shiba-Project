@@ -1,12 +1,17 @@
 package sheba.backend.app.BL;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import sheba.backend.app.entities.Admin;
 import sheba.backend.app.entities.MediaTask;
 import sheba.backend.app.entities.QuestionTask;
 import sheba.backend.app.entities.Task;
 import sheba.backend.app.exceptions.TaskCannotBeEmpty;
+import sheba.backend.app.repositories.AdminRepository;
 import sheba.backend.app.repositories.TaskRepository;
+import sheba.backend.app.security.CustomAdminDetails;
 import sheba.backend.app.util.StoragePath;
 
 import java.io.File;
@@ -25,15 +30,23 @@ public class TaskBL {
     private final TaskRepository taskRepository;
     private final QuestionTaskBL questionTaskBL;
     private final MediaTaskBL mediaTaskBL;
+    private final AdminRepository adminRepository;
 
-    public TaskBL(TaskRepository taskRepository, QuestionTaskBL questionTaskBL, MediaTaskBL mediaTaskBL) {
+    public TaskBL(TaskRepository taskRepository, QuestionTaskBL questionTaskBL, MediaTaskBL mediaTaskBL, AdminRepository adminRepository) {
         this.taskRepository = taskRepository;
         this.questionTaskBL = questionTaskBL;
         this.mediaTaskBL = mediaTaskBL;
+        this.adminRepository = adminRepository;
     }
 
     // use when adding task items
     public Task createTask(Task task, QuestionTask questionTask, List<MultipartFile> media) throws TaskCannotBeEmpty, IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomAdminDetails adminDetails = (CustomAdminDetails) authentication.getPrincipal();
+        Admin admin = adminRepository.findAdminByUsername(adminDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        task.setAdmin(admin);
+//        task.setAdminID(admin.getAdminID());
 
         if (questionTask == null && media == null && task.getTaskFreeTexts().isEmpty()) {
             throw new TaskCannotBeEmpty("Task must contain at least one item.");
