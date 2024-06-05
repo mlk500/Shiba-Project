@@ -26,11 +26,15 @@ public class MainAdminConfig {
     }
     @Bean
     public Admin mainAdmin() {
-
+        if(adminRepository.findAdminByUsername(this.mainAdminUsername).isEmpty()){
         return adminRepository.save(Admin.builder()
                 .username(mainAdminUsername)
                 .password(passwordEncoder.encode(mainAdminPassword))
                 .role(UserRole.MainAdmin)
                 .build());
+        }
+        else{
+            return adminRepository.findAdminByUsername(this.mainAdminUsername).get();
+        }
     }
 }
