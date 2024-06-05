@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import sheba.backend.app.DTO.UserRegistrationRequest;
+import sheba.backend.app.config.MainAdminConfig;
 import sheba.backend.app.entities.Admin;
 import sheba.backend.app.DTO.UserLoginRequest;
 import sheba.backend.app.repositories.AdminRepository;
@@ -18,12 +19,15 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final Admin mainAdmin;
 
-    public AuthenticationService(AdminRepository adminRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+
+    public AuthenticationService(AdminRepository adminRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager, MainAdminConfig mainAdminConfig) {
         this.adminRepository = adminRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.mainAdmin = mainAdminConfig.mainAdmin();
     }
 
     public AuthenticationResponse register(UserRegistrationRequest request) {
@@ -49,5 +53,9 @@ public class AuthenticationService {
         String token = jwtService.generateToken(userDetails);
 
         return new AuthenticationResponse(token, "Login successful");
+    }
+
+    public boolean authenticateMainAdmin(String username, String password) {
+        return mainAdmin.getUsername().equals(username) && passwordEncoder.matches(password, mainAdmin.getPassword());
     }
 }

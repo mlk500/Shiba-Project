@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +14,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+
 @Service
 public class JwtService {
 
-    private static final String secretKey = "bd279fb047279c287f52be609c28bf863e9699f44c5593a593a3fdcc2b37f0b7";
+    private final String secretKey;
+
+
+    @Autowired
+    public JwtService(String jwtSecret) {
+        this.secretKey = jwtSecret;
+    }
 
     public boolean isValid(String token, UserDetails user){
         String username = extractUsername(token);
