@@ -18,6 +18,7 @@ public class Unit {
     private String name;
     private String description;
     private String hint;
+    private int unitOrder;
     //tbd
     private long objectID;
     private long taskID;

@@ -34,14 +34,16 @@ public class UnitBL {
     }
 
     public Unit createUnit(Unit unit, long gameId) {
-        unit.setGame(gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found")));
-        unit.setTask(taskRepository.findById(unit.getTaskID()).orElseThrow(() -> new RuntimeException("Task not found")));
-        unit.setLocation(locationRepository.findById(unit.getLocationID()).orElseThrow(() -> new RuntimeException("Location not found")));
-        unit.setObject(objectLocationRepository.findById(unit.getObjectID()).orElseThrow(() -> new RuntimeException("Object not found")));
+        Unit savedUnit = unitRepository.save(unit);
+        System.out.println("unit is " + savedUnit);
+        savedUnit.setGame(gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found")));
+        savedUnit.setTask(taskRepository.findById(unit.getTaskID()).orElseThrow(() -> new RuntimeException("Task not found")));
+        savedUnit.setLocation(locationRepository.findById(unit.getLocationID()).orElseThrow(() -> new RuntimeException("Location not found")));
+        savedUnit.setObject(objectLocationRepository.findById(unit.getObjectID()).orElseThrow(() -> new RuntimeException("Object not found")));
 //        unit.setTaskID(taskRepository.findById(unit.getTaskID()).get().getTaskID());
 //        unit.setObjectID(objectLocationRepository.findById(objectId).get().getObjectID());
 //        unit.setLocationID(objectLocationRepository.findById(objectId).get().getLocation().getLocationID());
-        return unitRepository.save(unit);
+        return unitRepository.save(savedUnit);
     }
 //    public Unit createUnit(Unit unit, long gameId, long taskId, long objectId) {
 //        unit.setGame(gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found")));
