@@ -12,5 +12,7 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 
     Admin findByAdminID(long adminID);
 
+    Optional<Admin> findAdminBySector(String sector);
+
 //    Admin findAdminBySector(String sector);
 }

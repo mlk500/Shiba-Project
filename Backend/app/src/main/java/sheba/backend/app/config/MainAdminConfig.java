@@ -30,7 +30,7 @@ public class MainAdminConfig {
         return adminRepository.save(Admin.builder()
                 .username(mainAdminUsername)
                 .password(passwordEncoder.encode(mainAdminPassword))
-                .color("#BD10E0")
+                .sector("כללי")
                 .role(UserRole.MainAdmin)
                 .build());
         }

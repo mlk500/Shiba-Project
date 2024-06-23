@@ -8,9 +8,12 @@ import sheba.backend.app.entities.Admin;
 import sheba.backend.app.entities.MediaTask;
 import sheba.backend.app.entities.QuestionTask;
 import sheba.backend.app.entities.Task;
+import sheba.backend.app.exceptions.AdminNotFound;
 import sheba.backend.app.exceptions.TaskCannotBeEmpty;
+import sheba.backend.app.exceptions.TaskIsPartOfUnit;
 import sheba.backend.app.repositories.AdminRepository;
 import sheba.backend.app.repositories.TaskRepository;
+import sheba.backend.app.repositories.UnitRepository;
 import sheba.backend.app.security.CustomAdminDetails;
 import sheba.backend.app.util.StoragePath;
 
@@ -31,24 +34,34 @@ public class TaskBL {
     private final QuestionTaskBL questionTaskBL;
     private final MediaTaskBL mediaTaskBL;
     private final AdminRepository adminRepository;
+    private final UnitRepository unitRepository;
 
-    public TaskBL(TaskRepository taskRepository, QuestionTaskBL questionTaskBL, MediaTaskBL mediaTaskBL, AdminRepository adminRepository) {
+    public TaskBL(TaskRepository taskRepository, QuestionTaskBL questionTaskBL, MediaTaskBL mediaTaskBL, AdminRepository adminRepository, UnitRepository unitRepository) {
         this.taskRepository = taskRepository;
         this.questionTaskBL = questionTaskBL;
         this.mediaTaskBL = mediaTaskBL;
         this.adminRepository = adminRepository;
+        this.unitRepository = unitRepository;
     }
 
     // use when adding task items
-    public Task createTask(Task task, QuestionTask questionTask, List<MultipartFile> media) throws TaskCannotBeEmpty, IOException {
+    public Task createTask(Task task, QuestionTask questionTask, List<MultipartFile> media, String adminSector) throws TaskCannotBeEmpty, IOException, AdminNotFound {
+        Admin admin;
+        if(adminSector!= null && SecurityContextHolder.getContext().getAuthentication() != null){
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomAdminDetails adminDetails = (CustomAdminDetails) authentication.getPrincipal();
-        Admin admin = adminRepository.findAdminByUsername(adminDetails.getUsername())
+        admin = adminRepository.findAdminByUsername(adminDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
         task.setAdmin(admin);
-//        task.setAdminID(admin.getAdminID());
-
-        if (questionTask == null && media == null && task.getTaskFreeTexts().isEmpty()) {
+        }
+        else{
+            admin = adminRepository.findAdminBySector(adminSector).orElseThrow(() -> new AdminNotFound("Admin not found with " +adminSector+ " sector"));
+            task.setAdmin(admin);
+        }
+//
+        task.setAdminIDAPI(admin.getAdminID());
+        if (questionTask == null && media == null && task.getTaskFreeTexts().isEmpty() && task.getMediaList() == null) {
             throw new TaskCannotBeEmpty("Task must contain at least one item.");
         }
 
@@ -59,19 +72,33 @@ public class TaskBL {
         return taskRepository.save(task);
     }
 
-    public Task updateTask(Long taskID, Task newTask, QuestionTask questionTask, List<MultipartFile> media) throws TaskCannotBeEmpty, IOException, IllegalArgumentException {
+    public Task updateTask(Long taskID, Task newTask, QuestionTask questionTask, List<MultipartFile> media, String adminSector, List<Long> toBeDeletedMediaIds, Long tbdQuestion) throws TaskCannotBeEmpty, IOException, IllegalArgumentException, AdminNotFound {
         Task task = taskRepository.findById(taskID)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found with id: " + taskID));
 
-        if (questionTask == null && media == null && task.getTaskFreeTexts().isEmpty() && newTask.getTaskFreeTexts().isEmpty()) {
+        if (questionTask == null
+                && media == null
+                && task.getQuestionTask() == null
+                && tbdQuestion != null
+                && task.getTaskFreeTexts().isEmpty() &&
+                newTask.getTaskFreeTexts().isEmpty() &&
+                task.getMediaList() == null &&
+                (task.getMediaList().size() - toBeDeletedMediaIds.size()) <= 0) {
             throw new TaskCannotBeEmpty("Task must contain at least one item.");
         }
 
         if (newTask != null) {
             updateTaskFields(task, newTask);
         }
-
-        createTask(task, questionTask, media);
+        if (toBeDeletedMediaIds != null) {
+            for (Long mediaId : toBeDeletedMediaIds) {
+                removeMediaFromTask(taskID, mediaId);
+            }
+        }
+        if (tbdQuestion != null) {
+            removeQuestionFromTask(taskID);
+        }
+        createTask(task, questionTask, media, adminSector);
 
         return taskRepository.save(task);
     }
@@ -81,6 +108,7 @@ public class TaskBL {
         task.setName(newTask.getName());
         task.setTaskFreeTexts(newTask.getTaskFreeTexts());
         task.setDescription(newTask.getDescription());
+        task.setWithMsg(newTask.isWithMsg());
     }
 
     public QuestionTask updateTaskQuestion(Long taskId, Long questionTaskId, QuestionTask questionTask) {
@@ -95,21 +123,21 @@ public class TaskBL {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found with id: " + taskId));
 
+//        if (task.getMediaList().size() < 2 && task.getTaskFreeTexts().isEmpty() && task.getQuestionTask() == null) {
+//            throw new TaskCannotBeEmpty("Removing this item leads to an empty task, delete task instead or add at least one item");
+//        }
+
         MediaTask mediaToRemove = task.getMediaList().stream()
                 .filter(media -> media.getMediaTaskID() == mediaId)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Media not found with id: " + mediaId));
 
-        if (task.getMediaList().size() < 2 && task.getTaskFreeTexts().isEmpty() && task.getQuestionTask() == null) {
-            throw new TaskCannotBeEmpty("Removing this item leads to an empty task, delete task instead or add at least one item");
-        }
-
         task.getMediaList().remove(mediaToRemove);
         mediaTaskBL.deleteMedia(mediaToRemove);
 
-        if (task.getQuestionTask() == null && task.getMediaList().isEmpty()) {
-            throw new TaskCannotBeEmpty("Task must contain at least one item after media removal.");
-        }
+//        if (task.getQuestionTask() == null && task.getMediaList().isEmpty()) {
+//            throw new TaskCannotBeEmpty("Task must contain at least one item after media removal.");
+//        }
         return taskRepository.save(task);
     }
 
@@ -118,9 +146,9 @@ public class TaskBL {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found with id: " + taskId));
 
-        if (task.getMediaList().isEmpty() || task.getTaskFreeTexts().isEmpty()) {
-            throw new TaskCannotBeEmpty("Removing this item leads to an empty task, delete task instead or add at least one item");
-        }
+//        if (task.getMediaList().isEmpty() || task.getTaskFreeTexts().isEmpty()) {
+//            throw new TaskCannotBeEmpty("Removing this item leads to an empty task, delete task instead or add at least one item");
+//        }
         if (task.getQuestionTask() != null) {
             questionTaskBL.deleteQuestionTask(task.getQuestionTask());
             task.setQuestionTask(null);
@@ -128,13 +156,19 @@ public class TaskBL {
         return taskRepository.save(task);
     }
 
+
+
     public Optional<Task> getTask(Long id) {
         return taskRepository.findById(id);
     }
 
-    public void deleteTask(Long taskId) throws IOException, RuntimeException {
+    public void deleteTask(Long taskId) throws IOException, RuntimeException, TaskIsPartOfUnit {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId));
+
+        if(unitRepository.findByTask(task) != null || !unitRepository.findByTask(task).isEmpty()){
+            throw new TaskIsPartOfUnit("Task is part of an existing game");
+        }
 
         mediaTaskBL.deleteAllMediaForTask(taskId);
         if (task.getQuestionTask() != null) {

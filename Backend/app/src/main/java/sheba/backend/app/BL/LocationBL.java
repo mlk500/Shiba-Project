@@ -101,7 +101,7 @@ public class LocationBL {
         String qrName = Endpoints.QR_LOCATION + location.getName() + "_floor" + location.getFloor();
         String qrContent = "ID " + location.getLocationID() + "\n" + "Location Name " + location.getName() + "\n"
                 + "Floor " + location.getFloor() + "\n" + "Description " + location.getDescription();
-        return QRCodeGenerator.generateQRCode(qrName, qrContent, Endpoints.QR_LOCATION);
+        return QRCodeGenerator.generateQRCode(qrName, qrContent, Endpoints.QR_LOCATION, StoragePath.LOC_QR_IMG);
     }
 
     public Optional<Location> getLocationByID(long id) {

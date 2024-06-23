@@ -39,15 +39,21 @@ public class GameBL {
     }
 
     public Game createGame(Game game, MultipartFile image, List<Unit> units) throws IOException, WriterException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomAdminDetails adminDetails = (CustomAdminDetails) authentication.getPrincipal();
-        Admin admin = adminRepository.findAdminByUsername(adminDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("Admin not found"));
-        game.setAdmin(admin);
-        game.setAdminID(admin.getAdminID());
+        if(SecurityContextHolder.getContext().getAuthentication() != null){
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomAdminDetails adminDetails = (CustomAdminDetails) authentication.getPrincipal();
+            Admin admin = adminRepository.findAdminByUsername(adminDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Admin not found"));
+            game.setAdmin(admin);
+            game.setAdminID(admin.getAdminID());
+        }
+        else{
+            game.setAdmin(adminRepository.findByAdminID(2));
+            game.setAdminID(2);
+        }
 
         Game savedGame = gameRepository.save(game);
-        if(!units.isEmpty()){
+        if(units != null){
             Game finalSavedGame = savedGame;
             units.forEach(unit -> unitBL.createUnit(unit, finalSavedGame.getGameID()));
         }
@@ -57,7 +63,8 @@ public class GameBL {
 
 
         String gameIdentifier = String.valueOf(savedGame.getGameID()); //change to URL later
-        String qrCodePath = QRCodeGenerator.generateQRCode("game-" + savedGame.getGameID(), gameIdentifier, StoragePath.GAME_QR);
+        String qrCodePath = QRCodeGenerator.generateQRCode("game-" + savedGame.getGameID(), gameIdentifier, StoragePath.GAME_QR,
+                StoragePath.GAME_QR_IMG);
         savedGame.setQRCodePath(qrCodePath);
         return gameRepository.save(savedGame);
     }

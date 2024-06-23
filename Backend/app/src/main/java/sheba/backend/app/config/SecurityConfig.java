@@ -37,7 +37,8 @@ public class SecurityConfig implements WebMvcConfigurer {
 //            Endpoints.OBJECT_IMAGE_ENDPOINT+"/**",
 //            Endpoints.QUESTION_TASK_ENDPOINT+"/**",
 //            Endpoints.TASK_ENDPOINT+"/**",
-//            Endpoints.GAME_ENDPOINT+"/**"};
+//            Endpoints.GAME_ENDPOINT+"/**",
+//            Endpoints.ADMIN_ENDPOINT+"/**"};
 
     public SecurityConfig(CustomAdminDetailsService adminDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.adminDetailsService = adminDetailsService;

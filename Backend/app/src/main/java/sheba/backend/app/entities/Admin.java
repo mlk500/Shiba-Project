@@ -24,7 +24,6 @@ public class Admin{
     @Column(unique = true)
     private String username;
     private String password;
-    private String color;
     private String sector; //might be enum
     @Enumerated(EnumType.STRING)
     private UserRole role;

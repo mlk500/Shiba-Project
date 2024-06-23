@@ -40,7 +40,7 @@ public class AuthenticationService {
         UserDetails userDetails = new CustomAdminDetails(admin);
         final String token = jwtService.generateToken(userDetails);
         System.out.println("token is    " + token);
-        return new AuthenticationResponse(token, "User registered successfully");
+        return new AuthenticationResponse(token, "User registered successfully", admin);
     }
 
     public AuthenticationResponse authenticate(UserLoginRequest request) {
@@ -51,8 +51,9 @@ public class AuthenticationService {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String token = jwtService.generateToken(userDetails);
-
-        return new AuthenticationResponse(token, "Login successful");
+        Admin currAdmin = adminRepository.findAdminByUsername(request.getUsername()).get();
+        currAdmin.setPassword(null);
+        return new AuthenticationResponse(token, "Login successful", currAdmin);
     }
 
     public boolean authenticateMainAdmin(String username, String password) {

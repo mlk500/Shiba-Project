@@ -1,8 +1,10 @@
 package sheba.backend.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import sheba.backend.app.DTO.AdminDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,8 @@ public class Task {
     private long taskID;
     private String name;
     private String description;
+    private boolean withMsg;
+    private long adminIDAPI;
 
     @ElementCollection
     @CollectionTable(name = "task_text", joinColumns = @JoinColumn(name = "task_id"))
@@ -34,4 +38,5 @@ public class Task {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_admin_id")
     private Admin admin;
+
 }
