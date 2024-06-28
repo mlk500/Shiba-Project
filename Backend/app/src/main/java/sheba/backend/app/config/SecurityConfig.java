@@ -30,7 +30,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     private final CustomAdminDetailsService adminDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private String[] authorized_urls = {"/login/**", "/register/**"};
-//    private String[] authorized_urls_test = {"/login/**", "/register/**",
+//    private String[] authorized_urls = {"/login/**", "/register/**",
 //            Endpoints.LOCATION_IMAGE_ENDPOINT + "/**", Endpoints.LOCATION_ENDPOINT+ "/**",
 //            Endpoints.LOCATION_IMAGE_ENDPOINT + "/getimage/**",
 //            Endpoints.OBJECTS_ENDPOINT+"/**",
@@ -86,9 +86,9 @@ public class SecurityConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:5173", "http://localhost:8080/",
-                        "https://admin-platform-9l34-120xotv2z-mlk500s-projects.vercel.app/")
+                        "https://admin-platform-9l34-39s7xfz6x-mlk500s-projects.vercel.app/")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*") // Allow all headers
+                .allowedHeaders("*")
                 .allowCredentials(true);
     }
 }
