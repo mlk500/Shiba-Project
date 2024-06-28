@@ -84,11 +84,16 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//                .allowedOrigins("http://localhost:5173", "http://localhost:8080/",
+//                        "https://admin-platform-9l34-39s7xfz6x-mlk500s-projects.vercel.app/")
+//                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//                .allowedHeaders("*")
+//                .allowCredentials(true);
+
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173", "http://localhost:8080/",
-                        "https://admin-platform-9l34-39s7xfz6x-mlk500s-projects.vercel.app/")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowedMethods("*")
+                .allowedOrigins("*");
     }
 }
+
