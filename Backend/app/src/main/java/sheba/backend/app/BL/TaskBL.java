@@ -166,7 +166,8 @@ public class TaskBL {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId));
 
-        if(unitRepository.findByTask(task) != null || !unitRepository.findByTask(task).isEmpty()){
+        if(unitRepository.findByTask(task) != null && !unitRepository.findByTask(task).isEmpty()){
+            unitRepository.findByTask(task);
             throw new TaskIsPartOfUnit("Task is part of an existing game");
         }
 
