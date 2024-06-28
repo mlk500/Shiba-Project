@@ -1,5 +1,9 @@
 package sheba.backend.app.config;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -14,12 +18,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import sheba.backend.app.security.CustomAdminDetailsService;
 import sheba.backend.app.security.JwtAuthenticationFilter;
 import sheba.backend.app.util.Endpoints;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -82,18 +90,56 @@ public class SecurityConfig implements WebMvcConfigurer {
         return configuration.getAuthenticationManager();
     }
 
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-////        registry.addMapping("/**")
-////                .allowedOrigins("http://localhost:5173", "http://localhost:8080/",
-////                        "https://admin-platform-9l34-39s7xfz6x-mlk500s-projects.vercel.app/")
-////                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-////                .allowedHeaders("*")
-////                .allowCredentials(true);
-//
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
 //        registry.addMapping("/**")
-//                .allowedMethods("*")
-//                .allowedOrigins("*");
+//                .allowedOrigins("http://localhost:5173", "http://localhost:8080/",
+//                        "https://admin-platform-9l34-39s7xfz6x-mlk500s-projects.vercel.app/")
+//                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//                .allowedHeaders("*")
+//                .allowCredentials(true);
+
+
+        registry.addMapping("/**")
+                .allowedOriginPatterns("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOriginPattern("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("PUT");
+        config.addAllowedMethod("DELETE");
+        config.addAllowedMethod("OPTIONS");
+        config.addAllowedMethod("HEAD");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
+//    @Bean
+//    public OncePerRequestFilter corsFilter() {
+//        return new OncePerRequestFilter() {
+//            @Override
+//            protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+//
+//             String origin = request.getHeader("Origin");
+//                if (origin != null) {
+//                    response.setHeader("Access-Control-Allow-Origin", origin);
+//                }
+//                response.setHeader("Access-Control-Allow-Credentials", "true");
+//                response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+//                response.setHeader("Access-Control-Allow-Headers", "*");
+//                filterChain.doFilter(request, response);
+//            }
+//        };
 //    }
 }
 
